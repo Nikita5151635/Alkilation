@@ -1,0 +1,219 @@
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QDialog, QMenuBar, QAction, QHBoxLayout, QSlider, QPushButton
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Алкилирование изобутана смешанными олефинами")
+        self.setGeometry(100, 100, 800, 600)
+
+        # Создание меню
+        menubar = self.menuBar()
+        file_menu = menubar.addMenu("Файл")
+        help_menu = menubar.addMenu("Справка")
+
+        exit_action = QAction("Выход", self)
+        exit_action.triggered.connect(self.close)
+        file_menu.addAction(exit_action)
+
+        about_action = QAction("О программе", self)
+        about_action.triggered.connect(self.show_about)
+        help_menu.addAction(about_action)
+
+        info_action = QAction("Подробнее о процессе", self)
+        info_action.triggered.connect(self.show_info)
+        help_menu.addAction(info_action)
+
+        olefins_action = QAction("Олефины", self)
+        olefins_action.triggered.connect(self.show_olefins)
+        help_menu.addAction(olefins_action)
+
+        catalyst_action = QAction("Катализатор", self)
+        catalyst_action.triggered.connect(self.show_catalyst)
+        help_menu.addAction(catalyst_action)
+
+        modeling_action = QAction("Моделирование", self)
+        modeling_action.triggered.connect(self.show_modeling)
+        help_menu.addAction(modeling_action)
+
+        # Создание виджетов
+        self.label = QLabel("Алкилирование изобутана смешанными олефинами - это процесс, используемый для производства высокооктанового бензина.", self)
+        self.label.setWordWrap(True)
+        self.label.setFont(QFont("Arial", 14))
+        self.label.setStyleSheet("color: #333333;")
+
+        self.button_graph = QPushButton("График процесса", self)
+        self.button_graph.setFont(QFont("Arial", 12))
+        self.button_graph.setStyleSheet("background-color: #9C27B0; color: white;")
+        self.button_graph.clicked.connect(self.show_graph)
+
+        # Установка макета
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.button_graph)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+
+    def show_info(self):
+        dialog = InfoDialog(self)
+        dialog.exec_()
+
+    def show_olefins(self):
+        dialog = OlefinsDialog(self)
+        dialog.exec_()
+
+    def show_catalyst(self):
+        dialog = CatalystDialog(self)
+        dialog.exec_()
+
+    def show_modeling(self):
+        dialog = ModelingDialog(self)
+        dialog.exec_()
+
+    def show_graph(self):
+        dialog = GraphDialog(self)
+        dialog.exec_()
+
+    def show_about(self):
+        dialog = AboutDialog(self)
+        dialog.exec_()
+
+class InfoDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Информация о процессе")
+        self.setGeometry(150, 150, 600, 400)
+
+        label = QLabel("В процессе алкилирования изобутан реагирует с олефинами (например, пропиленом или бутиленом) в присутствии сернокислотного катализатора, образуя алкилаты.", self)
+        label.setWordWrap(True)
+        label.setFont(QFont("Arial", 12))
+        label.setStyleSheet("color: #333333;")
+
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+
+        self.setLayout(layout)
+
+class OlefinsDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Олефины")
+        self.setGeometry(150, 150, 600, 400)
+
+        label = QLabel("В процессе алкилирования используются следующие олефины:\n\n1. Пропилен (пропен)\n2. Бутилен (бутен)\n3. Пентилен (пентен)", self)
+        label.setWordWrap(True)
+        label.setFont(QFont("Arial", 12))
+        label.setStyleSheet("color: #333333;")
+
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+
+        self.setLayout(layout)
+
+class CatalystDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Катализатор")
+        self.setGeometry(150, 150, 600, 400)
+
+        label = QLabel("Серная кислота используется как катализатор в процессе алкилирования изобутана благодаря своей высокой эффективности. Она обеспечивает быструю и эффективную реакцию между изобутаном и олефинами.", self)
+        label.setWordWrap(True)
+        label.setFont(QFont("Arial", 12))
+        label.setStyleSheet("color: #333333;")
+
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+
+        self.setLayout(layout)
+
+class ModelingDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Моделирование процесса")
+        self.setGeometry(150, 150, 600, 400)
+
+        label = QLabel("Мультиуровневое моделирование процесса алкилирования изобутана с использованием смешанных C4 олефинов и серной кислоты как катализатора включает в себя разработку кинетической модели и расчет кинетических параметров.", self)
+        label.setWordWrap(True)
+        label.setFont(QFont("Arial", 12))
+        label.setStyleSheet("color: #333333;")
+
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+
+        self.setLayout(layout)
+
+class GraphDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("График процесса")
+        self.setGeometry(150, 150, 800, 600)
+
+        # Создание графика
+        self.figure, self.ax = plt.subplots()
+        self.canvas = FigureCanvas(self.figure)
+
+        # Создание индикаторов
+        self.temp_label = QLabel("Температура: 0°C", self)
+        self.temp_label.setFont(QFont("Arial", 12))
+        self.temp_slider = QSlider(Qt.Horizontal, self)
+        self.temp_slider.setMinimum(0)
+        self.temp_slider.setMaximum(100)
+        self.temp_slider.valueChanged.connect(self.update_temp)
+
+        self.pressure_label = QLabel("Давление: 0 бар", self)
+        self.pressure_label.setFont(QFont("Arial", 12))
+        self.pressure_slider = QSlider(Qt.Horizontal, self)
+        self.pressure_slider.setMinimum(0)
+        self.pressure_slider.setMaximum(10)
+        self.pressure_slider.valueChanged.connect(self.update_pressure)
+
+        # Установка макета
+        layout = QVBoxLayout()
+        layout.addWidget(self.canvas)
+        layout.addWidget(self.temp_label)
+        layout.addWidget(self.temp_slider)
+        layout.addWidget(self.pressure_label)
+        layout.addWidget(self.pressure_slider)
+
+        self.setLayout(layout)
+
+    def update_temp(self, value):
+        self.temp_label.setText(f"Температура: {value}°C")
+        self.update_graph()
+
+    def update_pressure(self, value):
+        self.pressure_label.setText(f"Давление: {value} бар")
+        self.update_graph()
+
+    def update_graph(self):
+        self.ax.clear()
+        self.ax.plot([0, 1, 2], [self.temp_slider.value(), self.pressure_slider.value(), self.temp_slider.value() + self.pressure_slider.value()])
+        self.canvas.draw()
+
+class AboutDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("О программе")
+        self.setGeometry(150, 150, 400, 200)
+
+        label = QLabel("Это приложение демонстрирует процесс алкилирования изобутана смешанными олефинами.\n\nРазработано с использованием PyQt5.", self)
+        label.setWordWrap(True)
+        label.setFont(QFont("Arial", 12))
+        label.setStyleSheet("color: #333333;")
+
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+
+        self.setLayout(layout)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
